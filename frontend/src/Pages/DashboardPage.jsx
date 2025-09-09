@@ -1,22 +1,41 @@
+import React, { useState, useEffect } from "react";
 import Sidebar from "../Components/Sidebar";
 import KpiCard from "../Components/KpiCard";
-import Tabs from "../Components/Tabs";
+import TabbedTable from "../Components/TabbedTable";
 
 function DashboardPage() {
+  const [kpi, setKpi] = useState(null);
+
+  // Fetch KPI summary (main dashboard stats)
+  useEffect(() => {
+    fetch("http://127.0.0.1:8000/api/kpi/")
+      .then((res) => res.json())
+      .then((data) => setKpi(data))
+      .catch((err) => console.error("Error fetching KPI:", err));
+  }, []);
+
   return (
     <div className="dashboard-layout">
       <Sidebar />
       <main className="main-content">
         <h1>Welcome Admin! Here's your platform overview</h1>
 
+        {/* KPI Summary */}
         <div className="kpi-grid">
-          <KpiCard label="Total Enrollment" value="387 Events" color="#3498db" icon="📊" />
-          <KpiCard label="Enrolled Events" value="24 Active" color="#2ecc71" icon="📅" />
-          <KpiCard label="Past Events" value="156 Completed" color="#e67e22" icon="✅" />
-          <KpiCard label="Enrolled for Others" value="12 Family" color="#9b59b6" icon="👨‍👩‍👧" />
+          {kpi ? (
+            <>
+              <KpiCard label="Total Registrations" value={kpi.total_registrations} color="#3498db" icon="📊" />
+              <KpiCard label="Total Users" value={kpi.total_users} color="#2ecc71" icon="👥" />
+              <KpiCard label="Total Payments" value={kpi.total_payments} color="#e67e22" icon="💰" />
+              <KpiCard label="Total Events" value={kpi.total_events} color="#9b59b6" icon="🎉" />
+            </>
+          ) : (
+            <p>Loading stats...</p>
+          )}
         </div>
 
-        <Tabs />
+        {/* Tabbed Table */}
+        <TabbedTable />
       </main>
     </div>
   );
