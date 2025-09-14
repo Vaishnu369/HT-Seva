@@ -1,6 +1,6 @@
 from rest_framework import viewsets
-from .models import User, Event, Registration, Payment
-from .serializers import UserSerializer, EventSerializer, RegistrationSerializer, PaymentSerializer
+from .models import *
+from .serializers import *
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -21,3 +21,31 @@ class RegistrationViewSet(viewsets.ModelViewSet):
 class PaymentViewSet(viewsets.ModelViewSet):
     queryset = Payment.objects.all()
     serializer_class = PaymentSerializer
+
+class AttendanceViewSet(viewsets.ModelViewSet):
+    queryset = Attendance.objects.all()
+    serializer_class = AttendanceSerializer
+
+class DonationViewSet(viewsets.ModelViewSet):
+    queryset = Donation.objects.all()
+    serializer_class = DonationSerializer
+
+class BookSaleViewSet(viewsets.ModelViewSet):
+    queryset = BookSale.objects.all()
+    serializer_class = BookSaleSerializer
+
+class GoodieSaleViewSet(viewsets.ModelViewSet):
+    queryset = GoodieSale.objects.all()
+    serializer_class = GoodieSaleSerializer
+
+class EngagementLogViewSet(viewsets.ModelViewSet):
+    queryset = EngagementLog.objects.all()
+    serializer_class = EngagementLogSerializer
+
+class LoginActivityViewSet(viewsets.ModelViewSet):
+    queryset = LoginActivity.objects.all()
+    serializer_class = LoginActivitySerializer
+
+class NotificationViewSet(viewsets.ModelViewSet):
+    queryset = Notification.objects.all()
+    serializer_class = NotificationSerializer
