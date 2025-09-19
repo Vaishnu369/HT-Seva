@@ -8,13 +8,11 @@ from analytics.views import *
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('core.urls')), 
-    path("api/admin/khojis/summary/", KPISummaryView.as_view()),
-    path("api/admin/registrations/new/", RegistrationStatsView.as_view()),
-    path("api/admin/sessions/", EventStatsView.as_view()),
-    path("api/admin/revenue/", RevenueTrendsView.as_view()),    
-
-
-    
+    path("registrations/monthly/", MonthlyRegistrationsView.as_view(), name="monthly-registrations"),
+    path("registrations/daily/", DailyRegistrationsView.as_view(), name="daily-registrations"),
+    path("events/occupancy/", EventOccupancyView.as_view(), name="event-occupancy"),
+    path("sessions/attendance/", SessionsAttendanceView.as_view(), name="sessions-attendance"),
+    path("notifications/stats/", UserNotificationStatsView.as_view(), name="user-notification-stats"),
 
 ]
 
