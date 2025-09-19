@@ -3,13 +3,13 @@ from django_pgviews.view import View
 
 class MonthlyRegistrations(View):
     sql = """
-        SELECT DATE_TRUNC('month', date_joined) AS month,
+        SELECT Date(DATE_TRUNC('month', date_joined)) AS month,
             COUNT(*) As total_registrations
         FROM core_user
         GROUP BY month
         ORDER BY month;
         """
-    month = models.DateField()
+    month = models.DateField(primary_key = True)
     total_registrations = models.IntegerField()
 
     materialized = True
@@ -21,13 +21,13 @@ class MonthlyRegistrations(View):
 
 class DailyRegistrations(View):
     sql = """
-        SELECT DATE(date_joined) AS day,
+        SELECT Date(date_joined) AS day,
                COUNT(*) AS total
         FROM core_user
         GROUP BY day
         ORDER BY day
     """
-    day = models.DateField()
+    day = models.DateField(primary_key = True)
     total = models.IntegerField()
 
     materialized = True
@@ -49,7 +49,7 @@ class EventOccupancy(View):
         GROUP BY e.id, e.title, e.capacity
         ORDER BY e.title
     """
-    event_id = models.UUIDField()
+    event_id = models.UUIDField(primary_key = True)
     event_title = models.CharField(max_length=255)
     capacity = models.IntegerField()
     registered_count = models.IntegerField()
@@ -74,7 +74,7 @@ class SessionsAttendance(View):
         GROUP BY a.event_id, e.title
         ORDER BY e.title
     """
-    event_id = models.UUIDField()
+    event_id = models.UUIDField(primary_key = True)
     event_title = models.CharField(max_length=255)
     total_attendance = models.IntegerField()
     attendance_rate = models.DecimalField(max_digits=5, decimal_places=2)
@@ -94,7 +94,7 @@ class UserNotificationStats(View):
         WHERE is_read = FALSE
         GROUP BY user_id
     """
-    user_id = models.UUIDField()
+    user_id = models.UUIDField(primary_key = True)
     unread_count = models.IntegerField()
     materialized = True
     class Meta:

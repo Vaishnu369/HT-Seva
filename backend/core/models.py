@@ -5,32 +5,26 @@ from django.contrib.auth.models import AbstractUser
 
 
 
-class User(models.Model):
+class User(AbstractUser):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    username = models.CharField(max_length=255)
-    first_name = models.CharField(max_length=255)
-    last_name = models.CharField(max_length=255)
-    contact_no = models.CharField(max_length=15)
-    email = models.EmailField(unique=True)
-    role = models.CharField(max_length=50, choices=[
-        ('Khoji','Khoji'),
-        ('Tej Sevak','Tej Sevak'),
-        ('Admin','Admin')
-    ])
+    contact_no = models.CharField(max_length=15, blank=True, null=True)
+    role = models.CharField(
+        max_length=50,
+        choices=[
+            ('Khoji', 'Khoji'),
+            ('Tej Sevak', 'Tej Sevak'),
+            ('Admin', 'Admin')
+        ],
+        default='Khoji'
+    )
     language = models.CharField(max_length=50, blank=True)
     country = models.CharField(max_length=100, blank=True)
     state = models.CharField(max_length=100, blank=True)
     city = models.CharField(max_length=100, blank=True)
     tejasthan = models.CharField(max_length=100, blank=True)
-    date_joined = models.DateTimeField(auto_now_add=True)
-    password = models.CharField(max_length=255)
-    is_active = models.BooleanField(default=True)
-    last_login = models.DateTimeField(auto_now=True)
-    
+
     def __str__(self):
-        return f"{self.username.first_name} {self.username.last_name}"
-
-
+        return f"{self.first_name} {self.last_name}".strip() or self.username
 
 
 class Event(models.Model):
@@ -53,7 +47,7 @@ class Event(models.Model):
 class Registration(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
-    username = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     registration_status = models.CharField(
         max_length=20,
@@ -62,12 +56,12 @@ class Registration(models.Model):
     )
 
     def __str__(self):
-        return f"{self.username.first_name} {self.username.last_name} -> {self.event.title}"
+        return f"{self.user.first_name} {self.user.last_name} -> {self.event.title}"
 
 
 class Payment(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    username = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     registration = models.OneToOneField(Registration, on_delete=models.CASCADE)
     amount = models.DecimalField(max_digits=8, decimal_places=2)
     payment_date = models.DateTimeField(auto_now_add=True)
@@ -83,13 +77,13 @@ class Payment(models.Model):
     transaction_id = models.CharField(max_length=255, blank=True)
 
     def __str__(self):
-        return f"Payment {self.id} - {self.username.first_name} {self.username.last_name} - {self.payment_status}"
+        return f"Payment {self.id} - {self.user.first_name} {self.user.last_name} - {self.payment_status}"
 
 
 class Attendance(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
-    username = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     attendance_date = models.DateTimeField(auto_now_add=True)
     attendance_status = models.CharField(
         max_length=20,
@@ -98,11 +92,11 @@ class Attendance(models.Model):
     )
 
     def __str__(self):
-        return f"Attendance {self.id} - {self.event.title} - {self.username.first_name} {self.username.last_name}"
+        return f"Attendance {self.id} - {self.event.title} - {self.user.first_name} {self.user.last_name}"
 
 class Donation(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    username = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     amount = models.DecimalField(max_digits=8, decimal_places=2)
     donation_date = models.DateTimeField(auto_now_add=True)
     payment_method = models.CharField(
@@ -113,11 +107,11 @@ class Donation(models.Model):
     transaction_id = models.CharField(max_length=255, blank=True)
 
     def __str__(self):
-        return f"Donation {self.id} - {self.username.first_name} {self.username.last_name} - {self.payment_method}"
+        return f"Donation {self.id} - {self.user.first_name} {self.user.last_name} - {self.payment_method}"
 
 class BookSale(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    username = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     book_title = models.CharField(max_length=255)
     price = models.DecimalField(max_digits=8, decimal_places=2)
     quantity = models.IntegerField(default=1)
@@ -129,12 +123,12 @@ class BookSale(models.Model):
     transaction_id = models.CharField(max_length=255, blank=True)
 
     def __str__(self):
-        return f"Book Sale {self.id} - {self.username.first_name} {self.username.last_name} - {self.book_title}"
+        return f"Book Sale {self.id} - {self.user.first_name} {self.user.last_name} - {self.book_title}"
 
 
 class GoodieSale(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    username = models.ForeignKey(User, on_delete=models.CASCADE) 
+    user = models.ForeignKey(User, on_delete=models.CASCADE) 
     itemname = models.CharField(max_length=255)
     price = models.DecimalField(max_digits=8, decimal_places=2)
     quantity = models.IntegerField(default=1)
@@ -146,7 +140,7 @@ class GoodieSale(models.Model):
     transaction_id = models.CharField(max_length=255, blank=True)
 
     def __str__(self):
-        return f"Goodie Sale {self.id} - {self.username.first_name} {self.username.last_name} - {self.itemname}"        
+        return f"Goodie Sale {self.id} - {self.user.first_name} {self.user.last_name} - {self.itemname}"        
 
 class EngagementLog(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
